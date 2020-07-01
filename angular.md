@@ -103,8 +103,9 @@ Make a shared module if you have shared features e.g., components, pipes, direct
   - https://angular.io/api/common/NgStyle
 - ngModel
   - Use with elements that accept the user input
-  - `<input type="text" [(ngModel)]="data.title" />`
-
+  - `<input type="text" [(ngModel)]="title" name="title" />`
+  - Always set the `name` property wherever you use `ngModel` 
+  
 ## Data Binding
 Get data moved from code into tamplate and also handle events. 
 - interpolation *to write a value*
@@ -163,7 +164,7 @@ emit data from a child back up to a parent.
   selector:'app-search',
   template:`
     // <input type="text" [value]="search" (input)="$event.target.value />
-    <input type="text" [(ngModel)]="search" /> <!-- Easier way. from FormsModule --> 
+    <input type="text" [(ngModel)]="search name="search"" /> <!-- Easier way. from FormsModule --> 
   `
 })
 
@@ -344,9 +345,12 @@ Use with anchor tags `<a>` to link to a route.
   - https://www.digitalocean.com/community/tutorials/angular-change-detection-strategy
 - Angular CLI: Custom webpack Config
   - https://www.digitalocean.com/community/tutorials/angular-custom-webpack-config
-- Using Tailwind CSS Framework with Angular (custom webpack config in practical)
+- Using Tailwind CSS Framework with Angular (custom webpack config in practice)
   - https://www.auroria.io/blog/using-tailwindcss-framework-with-angular
 - How and when to unsubscribe in a component
   - https://stackoverflow.com/questions/38008334/angular-rxjs-when-should-i-unsubscribe-from-subscription
 - RxJS: Don’t Unsubscribe
   - https://medium.com/@benlesh/rxjs-dont-unsubscribe-6753ed4fda87
+- Build-specific configuration options: **Configure target-specific file replacements **
+  - https://angular.io/guide/build#configuring-application-environments
+  - [This git commit](https://github.com/ahmedibrahimq/ng-cart/commit/9ad73fd8e4eb1d5f97051f816f0718a792e49164)
