@@ -39,6 +39,8 @@
     - [creating](#creating)
     - [deleting](#deleting)
   - [Ranges](#ranges)
+  - [Queues](#queues)
+    - [Blocking & Non-blocking](#blocking--non-blocking)
   - [Hashes](#hashes)
     - [Creating](#creating-1)
     - [Iterating](#iterating)
@@ -344,6 +346,33 @@ p arr.length # 3
 - **`0..10`** using **..** is inclusive 10 is in-range
 - **`(1...10).to_a`**
 	- converting a range of integers into an array **`to_a`**
+
+## Queues
+### Blocking & Non-blocking
+Ruby implements a **thread-safe**, "multi-producer, multi-consumer", queues.
+
+- blocking
+  - `empty_q.pop` Calling **`pop`** on an empty queue will **suspend** (sleep) the **calling thread** **until new data** pushed onto the queue
+  ```ruby
+  q = Queue.new
+
+  producer = Thread.new { q << 1; sleep 3; q << 3 }
+
+  consumer = Thread.new do
+    while producer.alive? do
+      p q.pop
+    end
+  end
+
+  q << 2 # main thread. At this point, both `producer` and `consumer` will have been asleep. pushing `2` will awaken the `consumer`
+  
+  # Suspend the calling thread (main thread) and allow `consumer` thread to run and finish
+  # No need to join `producer`, we guarantee that it will run and finish before the `consumer` exits
+  # https://ruby-doc.org/core-2.5.0/Thread.html#method-i-join
+  consumer.join
+  ```
+- non-blocking
+  - `empty_q.pop(non-block=true)` The thread **won't** be suspended, and **ThreadError** will be raised.
 
 ## Hashes
 The order of adding elements is maintained **v 1.9**
