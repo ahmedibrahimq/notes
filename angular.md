@@ -16,6 +16,8 @@
 - [Pipes](#pipes)
   - [built-in pipes](#built-in-pipes)
   - [Build a custom pipes](#build-a-custom-pipes)
+- [Forms](#forms)
+  - [Template forms](#template-forms)
 - [Services](#services)
   - [Dependency Injection](#dependency-injection)
 - [HTTP](#http)
@@ -27,6 +29,8 @@
   - [`RouterModule`](#routermodule)
   - [`ActivatedRoute`](#activatedroute)
   - [`RouterLink`](#routerlink)
+  - [Navigate using the `Router` service](#navigate-using-the-router-service)
+  - [Lazy Loading](#lazy-loading)
 - [Deep Dive](#deep-dive)
 
 ## CLI
@@ -63,7 +67,7 @@ https://angular.io/api/core/Component
   - Make sure anyone else imports this module, gets access to these exported components.
 - `providers` 
   - providing services (*like exporting components*)
-  - any modules that load under the root module, will have access to the providers  (publicaly availabel)
+  - any modules that load under the root module, will have access to the providers  (publicly available)
 
 ### @Injectable()
 dependency injection in angular. https://angular.io/api/core/Injectable
@@ -105,7 +109,7 @@ Make a shared module if you have shared features e.g., components, pipes, direct
   - Use with elements that accept the user input
   - `<input type="text" [(ngModel)]="title" name="title" />`
   - Always set the `name` property wherever you use `ngModel` 
-  
+
 ## Data Binding
 Get data moved from code into tamplate and also handle events. 
 - interpolation *to write a value*
@@ -207,13 +211,32 @@ we need
 // Capitalize the first character in a string
 
 ```
+
+## Forms
+When dealing with a form, **start with an empty object that you can bind to**,
+until you have a selected object that you're going to edit.
+
+**Template forms** versus **reactive forms** -> https://angular.io/guide/forms-overview#choosing-an-approach  
+
+### Template forms
+create a local template variable =`ngForm`
+- When we create a form element, Under the hood, 
+  - Angular will create a form control to monitor what is happening with the form 
+  - (keep track of the **values** of the form and **valid state** of it)
+
+**When using a submit button**, bind to the **form submit event** `<form (sumbit)="save()">`,  
+instead of binding to that button click event.  
+
+
 ## Services
 A singleton. [Introduction to services and dependency injection](https://angular.io/guide/architecture-services)
 
 ### Dependency Injection
 Inject services into components. https://angular.io/guide/dependency-injection  
-Instruct Angular to inject the dependencies of a component into its constructor.
+Instruct Angular to inject the dependencies of a component into its constructor.  
 
+When we set an access modifier on a parameter in a constructor of a class,
+TypeScript will automatically assign it to a memebr of that class.
 
 ## HTTP
 Calling the server with HttpClient. https://angular.io/guide/http
@@ -320,7 +343,49 @@ Use it to get URL/query parameters.
 Use with anchor tags `<a>` to link to a route.  
 - `<a [routerLink]="['/orders', order.id]">{{order.title}}</a>`
   - `['/orders', order.id]` mapped to `'/orders/:id'`
+- `routerLinkActive="css-class"`
+  - Detect and attach a CSS class to the element that is attached to the active route.
 
+### Navigate using the `Router` service
+```typescript
+  // header.component.ts
+
+  // template: `<button (click)="logout()">Logout</button>`
+  
+  constructor(private router: Router) {}
+
+  logout() {
+    // logic
+    this.router.navigateByUrl('/login');
+  }
+```
+
+### Lazy Loading
+- `RouterModule.` `forRoot(myRoutes)` vs `forChild(myRoutes)`
+  - We want to have only a single routing service to handle the application routes
+  - `foorRoot` will load the routing service besides all of the routes.
+  - Inside child routing modules, for lazy loading childs, we want to use `forChild`,  
+    because it is not going to load the routing servive, so we won't to override the routing service.
+
+- `loadChildren`: Creating a separate bundle for a particular module and lazy loading it into the application
+  - use `loadChildren`, it performs **asynchronous** call to load whatever we give to it. _e.g., a module_  
+    ```typescript
+      // app-routing.module.ts -> root routing module
+      const routes: Routes = [
+        { /*route 1*/ },
+        { path: 'user', loadChildren: () => import('./user.module').then(module => module.UserModule) },
+        // {...},
+      ];
+    ```
+    ```typescript
+      // user-routing.module.ts -> child routing module
+
+      // NOTE: paths here will be relative the the parent (root) routing module.
+      // And every child inside this (user) routing module will treat it as its root
+      const routes: Routes = [
+        { path: '', component: UserComponent },
+      ];
+    ```
 ## Deep Dive
 - Constructor vs ngOnInit
   - https://stackoverflow.com/questions/35763730/difference-between-constructor-and-ngoninit
@@ -351,6 +416,6 @@ Use with anchor tags `<a>` to link to a route.
   - https://stackoverflow.com/questions/38008334/angular-rxjs-when-should-i-unsubscribe-from-subscription
 - RxJS: Don’t Unsubscribe
   - https://medium.com/@benlesh/rxjs-dont-unsubscribe-6753ed4fda87
-- Build-specific configuration options: **Configure target-specific file replacements **
-  - https://angular.io/guide/build#configuring-application-environments
+- Build-specific configuration options: **Configure target-specific file replacements**
+  - https://angular.io/guide/build#configure-target-specific-file-replacements
   - [This git commit](https://github.com/ahmedibrahimq/ng-cart/commit/9ad73fd8e4eb1d5f97051f816f0718a792e49164)
