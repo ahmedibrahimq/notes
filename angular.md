@@ -13,6 +13,7 @@
 - [Data Binding](#data-binding)
   - [Input property](#input-property)
   - [output property](#output-property)
+- [Local Templates `<ng-template>`](#local-templates-ng-template)
 - [Pipes](#pipes)
   - [built-in pipes](#built-in-pipes)
   - [Build a custom pipes](#build-a-custom-pipes)
@@ -191,6 +192,14 @@ set search(value: string) {
 <app-search (changed)="myFun($event)"></app-search>
 ```
 
+## Local Templates `<ng-template>`
+**Local template variable**: With it, we can reference a particular DOM element in the rest of the component template.  
+
+```html
+  <h1 *ngIF="selection; else elseBlock">{{selection}}</h1>
+  <!-- a way to declare a local template variable is by using (#) #myVar -->
+  <ng-template #elseBlock>Please select</ng-template>
+```
 
 ## Pipes
 Format the data as we bind it out to the UI.  
@@ -206,11 +215,7 @@ we need
 - implement `PipeTransform` interface
   - implement `transform(value: any){ return value; }` function
 - register it in a module
-  - `declarations: [echoPipe], exports: [echoPipe]`
-```javascript
-// Capitalize the first character in a string
-
-```
+  - `declarations: [EchoPipe], exports: [EchoPipe]`
 
 ## Forms
 When dealing with a form, **start with an empty object that you can bind to**,
