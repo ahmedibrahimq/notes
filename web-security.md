@@ -1,42 +1,43 @@
-# Web Security
-- [Web Security](#web-security)
-  - [XSS](#xss)
-    - [Types](#types)
-      - [Stored XSS](#stored-xss)
-      - [Reflected XSS](#reflected-xss)
-      - [DOM Based](#dom-based)
-      - [Blind XSS](#blind-xss)
-    - [Places where XSS happens](#places-where-xss-happens)
-    - [Prevent XSS](#prevent-xss)
-      - [Do not trust raw user data.](#do-not-trust-raw-user-data)
-      - [Escape/Sanitize user data before putting it into HTML](#escapesanitize-user-data-before-putting-it-into-html)
-      - [Content Security Policy (CSP)](#content-security-policy-csp)
-    - [Malicious Attachments](#malicious-attachments)
-  - [CSRF Cross-site request forgery](#csrf-cross-site-request-forgery)
-    - [Where CSRF Happens](#where-csrf-happens)
-    - [Prevent CSRF Attacks](#prevent-csrf-attacks)
-      - [Use Safe Alternatives `{local,session}Storage`](#use-safe-alternatives-localsessionstorage)
-      - [Create CSRF Token](#create-csrf-token)
-      - [Validate the request `origin`](#validate-the-request-origin)
-      - [Set your Cross-origin resource sharing (CORS) headers properly](#set-your-cross-origin-resource-sharing-cors-headers-properly)
-  - [HTTPS Downgrading Attack](#https-downgrading-attack)
-    - [How the attack happens](#how-the-attack-happens)
-    - [Prevent HTTPS Downgrading](#prevent-https-downgrading)
-      - [`upgrade-insecure-requests`](#upgrade-insecure-requests)
-      - [`Strict-Transport-Security`](#strict-transport-security)
-      - [HSTS Preload](#hsts-preload)
-      - [Compromised Certificate Authority](#compromised-certificate-authority)
-      - [HTTP Public Key Pinning (HPKP)](#http-public-key-pinning-hpkp)
-## XSS
+# Web Security <!-- omit in toc -->
+- [XSS Attack](#xss-attack)
+  - [Types](#types)
+    - [Stored XSS](#stored-xss)
+    - [Reflected XSS](#reflected-xss)
+    - [DOM Based](#dom-based)
+    - [Blind XSS](#blind-xss)
+  - [Places where XSS happens](#places-where-xss-happens)
+  - [Prevent XSS](#prevent-xss)
+    - [Do not trust raw user data.](#do-not-trust-raw-user-data)
+    - [Escape/Sanitize user data before putting it into HTML](#escapesanitize-user-data-before-putting-it-into-html)
+    - [Content Security Policy (CSP)](#content-security-policy-csp)
+  - [Malicious Attachments](#malicious-attachments)
+- [CSRF Cross-site request forgery Attack](#csrf-cross-site-request-forgery-attack)
+  - [Where CSRF Happens](#where-csrf-happens)
+  - [Prevent CSRF Attacks](#prevent-csrf-attacks)
+    - [Use Safe Alternatives `{local,session}Storage`](#use-safe-alternatives-localsessionstorage)
+    - [Create CSRF Token](#create-csrf-token)
+    - [Validate the request `origin`](#validate-the-request-origin)
+    - [Set your Cross-origin resource sharing (CORS) headers properly](#set-your-cross-origin-resource-sharing-cors-headers-properly)
+- [Attack](#attack)
+- [HTTPS Downgrading Attack](#https-downgrading-attack)
+  - [How the attack happens](#how-the-attack-happens)
+  - [Prevent HTTPS Downgrading](#prevent-https-downgrading)
+    - [`upgrade-insecure-requests`](#upgrade-insecure-requests)
+    - [`Strict-Transport-Security`](#strict-transport-security)
+    - [HSTS Preload](#hsts-preload)
+    - [Compromised Certificate Authority *(attack)*](#compromised-certificate-authority-attack)
+    - [~~HTTP Public Key Pinning (HPKP)~~ *Deprecated*](#shttp-public-key-pinning-hpkps-deprecated)
+
+## XSS Attack
 Putting content in a place that is designed for text, 
 but we can basically trick a system into treating it as a code and executing it.  
 
 ### Types
 #### Stored XSS
-When an attacker is adding something to the database.
+When the attacker's scripts are **stored in the database**.
 
 #### Reflected XSS
-Temporary response from the server. User input is reflected back.  
+Temporary response from the server. **User input is reflected back**.  
 e.g., `validation error: the username: hello<script>bad()</script> is invalid`
 
 #### DOM Based
@@ -61,7 +62,7 @@ Embedded content / Iframes.
 URLs controlled by user.  
 When user input is reflected back.  
 Render query parameters into DOM  
-innerHTML.  
+`innerHTML`, `eval()`.  
 
 ### Prevent XSS
 #### Do not trust raw user data.
@@ -153,7 +154,7 @@ Attackers can embed harmful code into what appears a non-executable documents. e
   - This will drop all data that does not have anything to do with pixels shown on the screen.
 - Do not oblige users to ask their web browsers to run dynamic **code in PDF**.
 
-## CSRF Cross-site request forgery
+## CSRF Cross-site request forgery Attack
 We are vulnerable if our server use cookies, sent along with the request, to identify the users.  
 
 Attackers take advantage of that, by default **Cookie authentication** and **basic authentication** **credentials** (where your browser is asking for username and password)  
@@ -220,6 +221,7 @@ They are **sent along with each request** the user makes by default.
       - `Access-Control-Allow-Origin`:  Is the response can be shared with that given origin
       - `Access-Control-Max-Age`: How long these results can be cached
 
+## Attack
 
 ## HTTPS Downgrading Attack
 The attacker takes advantage of that the **initial Request is over plain HTTP**. The server should reply with a 301 redirect to HTTPS.  
@@ -252,12 +254,12 @@ Creating insecure proxy to downgrade that connection to insecure one
 - Preload web browsers with instructions to never talk to our domain over plain HTTP
 - Now the users does not have an option to proceed to the domain using a bad certificate
 
-#### Compromised Certificate Authority
+#### Compromised Certificate Authority *(attack)*
 When a trusted certificate authority (an entity that issues digital certificates)  
 gets its **private key stolen**, and the attacker (**MITM**) issues **fraudulent certificates** using it,  
 for any website, and **web browsers will trust** these certificates.
 
-#### HTTP Public Key Pinning (HPKP)
+#### ~~HTTP Public Key Pinning (HPKP)~~ *Deprecated*
 - Add `Public-Key-Pins: pin-sha256="XXXXXX..."; max-age=63072000; includeSubDomains; report-url="myapp.com/report-hack"` response header
 - `pin-sha256` Public key fingerprint. A hash of our public key. 
 - Make web browsers **only trust the certificate that matches the fingerprint**.
